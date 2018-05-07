@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.github.dcendents.android-maven'
+group='com.github.yann-yvan'
 
 android {
     compileSdkVersion 27
@@ -27,4 +29,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     //access app database
     debugCompile 'com.amitshekhar.android:debug-db:1.0.0'
+
 }
+
