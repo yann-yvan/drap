@@ -5,8 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 
-import corp.ny.com.rufus.model.Message;
-import corp.ny.com.rufus.model.User;
+import corp.ny.com.rufus.system.RufusApp;
+import corp.ny.com.rufus.utils.ManifestReader;
 
 
 /**
@@ -21,17 +21,13 @@ public class Migrations extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //((MainActivity) App.getContext()).writeInConsole(String.format("Table User : %s", User.getInstance().buildTable()));
-
-        //((MainActivity) App.getContext()).writeInConsole(String.format("Table Message : %s", Message.getInstance().buildTable()));
-        db.execSQL(User.getInstance().buildTable());
-        db.execSQL(Message.getInstance().buildTable());
+        RufusApp.getTableBuilder().build(db);
     }
 
     @Override
     public void onConfigure(SQLiteDatabase db) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            db.setForeignKeyConstraintsEnabled(true);
+            db.setForeignKeyConstraintsEnabled(ManifestReader.getMetadataBoolean("FOREIGN_KEY_CONSTRAINTS_ENABLED"));
         }
         super.onConfigure(db);
     }

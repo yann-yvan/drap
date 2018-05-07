@@ -1,11 +1,14 @@
 package corp.ny.com.rufus;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import corp.ny.com.rufus.model.Message;
 import corp.ny.com.rufus.model.User;
+import corp.ny.com.rufus.system.RufusApp;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -19,6 +22,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initialize() {
+        RufusApp.setTableBuilder(new RufusApp.TableBuilder() {
+            @Override
+            public void build(SQLiteDatabase db) {
+                db.execSQL(Message.getInstance().buildTable());
+                db.execSQL(User.getInstance().buildTable());
+            }
+        });
         console = findViewById(R.id.console);
         findViewById(R.id.insert_user).setOnClickListener(this);
         findViewById(R.id.select_user).setOnClickListener(this);

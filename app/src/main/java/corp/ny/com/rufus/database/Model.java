@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
-import corp.ny.com.rufus.system.App;
+import corp.ny.com.rufus.system.RufusApp;
 
 
 /**
@@ -21,12 +21,6 @@ import corp.ny.com.rufus.system.App;
  */
 
 public abstract class Model<T> implements Cloneable, Serializable {
-
-    // the name of the file of our database
-    public final static String NAME = "chat.db";
-
-    // Increment this value if you to update database
-    public final static int VERSION = 1;
 
     //getTable() identify
     private String idName = "id";
@@ -37,14 +31,6 @@ public abstract class Model<T> implements Cloneable, Serializable {
     //in case of need of cursor value
     //private Cursor cloneCursor;
 
-    /**
-     * Current database version
-     *
-     * @return an integer that represent <b>database version</b>
-     */
-    public static int getVERSION() {
-        return VERSION;
-    }
 
     /**
      * help to find field value by his name in a model
@@ -95,7 +81,7 @@ public abstract class Model<T> implements Cloneable, Serializable {
      * @return {@linkplain SQLiteDatabase} instance
      */
     protected SQLiteDatabase getDb() {
-        return App.getDataBaseInstance();
+        return RufusApp.getDataBaseInstance();
     }
 
     /**
@@ -405,22 +391,16 @@ public abstract class Model<T> implements Cloneable, Serializable {
      * @return the model with all attribute like save in the table
      */
     private T cursorToModel(Cursor cursor) {
-        try {
-            model = (T) ((Model) thisInstance()).clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-
         for (String column :
                 cursor.getColumnNames()) {
             try {
-                fillAttribute(model, column, cursor);
+                fillAttribute(thisInstance(), column, cursor);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
-        Log.i("Model", model.toString());
-        return model;
+        Log.i("Model", thisInstance().toString());
+        return thisInstance();
     }
 
     /**

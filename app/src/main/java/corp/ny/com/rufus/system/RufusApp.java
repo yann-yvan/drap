@@ -5,25 +5,32 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import corp.ny.com.rufus.database.Migrations;
-
-import static corp.ny.com.rufus.database.Model.NAME;
-import static corp.ny.com.rufus.database.Model.VERSION;
+import corp.ny.com.rufus.utils.ManifestReader;
 
 
 /**
  * Created by yann-yvan on 16/11/17.
  * TO MAKE  THIS WORK PROPERLY YOU SHOULD ADD THIS CLASS
  * IN YOUR AndroidManifest.xml like this
- * <application android:name=".response.App">
+ * <application android:name=".response.RufusApp">
  */
-public class App extends Application {
+public class RufusApp extends Application {
 
     private static Context mContext;
     private static Migrations mHandler = null;
     private static SQLiteDatabase mDb = null;
+    private static TableBuilder tableBuilder;
 
     public static Context getContext() {
         return mContext;
+    }
+
+    public static TableBuilder getTableBuilder() {
+        return tableBuilder;
+    }
+
+    public static void setTableBuilder(TableBuilder tableBuilder) {
+        RufusApp.tableBuilder = tableBuilder;
     }
 
     public static SQLiteDatabase getDataBaseInstance() {
@@ -38,13 +45,20 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;
-        mHandler = new Migrations(getApplicationContext(), NAME, null, VERSION);
+        mHandler = new Migrations(getApplicationContext(),
+                ManifestReader.getMetadataString("DATABASE"),
+                null, ManifestReader.getMetadataInt("VERSION"));
 
     }
+
 
     @Override
     public void onTerminate() {
         getDataBaseInstance().close();
         super.onTerminate();
+    }
+
+    public interface TableBuilder {
+        void build(SQLiteDatabase db);
     }
 }
