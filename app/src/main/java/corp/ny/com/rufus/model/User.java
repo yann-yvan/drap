@@ -90,17 +90,8 @@ public class User extends Model<User> {
     }
 
     @Override
-    public String getTableName() {
-        return User.class.getSimpleName();
-    }
-
-    @Override
     public String getIdValue() {
         return String.valueOf(id);
     }
 
-    @Override
-    public User thisInstance() {
-        return this;
-    }
 }

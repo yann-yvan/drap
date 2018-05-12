@@ -27,7 +27,7 @@ public abstract class Model<T> implements Cloneable, Serializable {
     //limit
     private int limit = 5;
     //handled model
-    private T model;
+    private T model = (T) this;
     //in case of need of cursor value
     //private Cursor cloneCursor;
 
@@ -69,13 +69,6 @@ public abstract class Model<T> implements Cloneable, Serializable {
     }
 
     /**
-     * Get model instance
-     *
-     * @return model instance
-     */
-    public abstract T thisInstance();
-
-    /**
      * Get database instance
      *
      * @return {@linkplain SQLiteDatabase} instance
@@ -89,7 +82,9 @@ public abstract class Model<T> implements Cloneable, Serializable {
      *
      * @return table name
      */
-    public abstract String getTableName();
+    public String getTableName() {
+        return model.getClass().getSimpleName();
+    }
 
     /**
      * Define by which column result should be order
@@ -134,7 +129,7 @@ public abstract class Model<T> implements Cloneable, Serializable {
      * @return the model inserted into the table on <b>null</b> if something went wrong
      */
     public T create(T obj) {
-        long success = getDb().insert(getTableName(), null, sqlQueryBuilder(obj, new ContentValues()));
+        long success = getDb().insert(getTableName(), null, sqlQueryBuilder(new ContentValues()));
         if (success > 0) {
             Log.e("new Id ", String.valueOf(success));
             return find(success);
@@ -157,7 +152,7 @@ public abstract class Model<T> implements Cloneable, Serializable {
      * @return the model inserted into the table on <b>null</b> if something went wrong
      */
     public T save() {
-        long success = getDb().insert(getTableName(), null, sqlQueryBuilder(thisInstance(), new ContentValues()));
+        long success = getDb().insert(getTableName(), null, sqlQueryBuilder(new ContentValues()));
         if (success > 0) {
             Log.e("new Id ", String.valueOf(success));
             return find(success);
@@ -199,7 +194,7 @@ public abstract class Model<T> implements Cloneable, Serializable {
      * @return the model up to date from the table on <b>null</b> if something went wrong
      */
     public T update(T obj) {
-        int success = getDb().update(getTableName(), sqlQueryBuilder(obj, new ContentValues()), getIdName() + "=?", new String[]{getIdValue()});
+        int success = getDb().update(getTableName(), sqlQueryBuilder(new ContentValues()), getIdName() + "=?", new String[]{getIdValue()});
         if (success > 0) {
             Log.e("new Id ", String.valueOf(success));
             return find(success);
@@ -371,12 +366,11 @@ public abstract class Model<T> implements Cloneable, Serializable {
      * return query;<br>
      * </code>
      *
-     * @param obj   the model to convert
      * @param query will contain the value of the of the model in query string
      * @return and object that will be use for update and insert query
      */
-    public ContentValues sqlQueryBuilder(T obj, ContentValues query) {
-        return prepareStatement(obj, query);
+    public ContentValues sqlQueryBuilder(ContentValues query) {
+        return prepareStatement(model, query);
     }
 
     /**
@@ -391,16 +385,23 @@ public abstract class Model<T> implements Cloneable, Serializable {
      * @return the model with all attribute like save in the table
      */
     private T cursorToModel(Cursor cursor) {
+        T object = null;
+        try {
+            object = (T) clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
         for (String column :
                 cursor.getColumnNames()) {
             try {
-                fillAttribute(thisInstance(), column, cursor);
+                assert object != null;
+                fillAttribute(object, column, cursor);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
-        Log.i("Model", thisInstance().toString());
-        return thisInstance();
+
+        return object;
     }
 
     /**
@@ -431,7 +432,7 @@ public abstract class Model<T> implements Cloneable, Serializable {
 
     @Override
     public String toString() {
-        return printClass(thisInstance());
+        return printClass(model);
     }
 
     @Override

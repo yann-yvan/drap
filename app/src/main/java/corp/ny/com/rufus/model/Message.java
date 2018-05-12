@@ -53,18 +53,8 @@ public class Message extends Model<Message> {
     }
 
     @Override
-    public String getTableName() {
-        return Message.class.getSimpleName();
-    }
-
-    @Override
     public String getIdValue() {
         return String.valueOf(id);
-    }
-
-    @Override
-    public Message thisInstance() {
-        return this;
     }
 
     @Override
