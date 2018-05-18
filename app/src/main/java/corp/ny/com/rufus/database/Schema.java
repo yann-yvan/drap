@@ -129,10 +129,10 @@ public class Schema {
 
     @Override
     public String toString() {
-        return String.format("CREATE TABLE IF NOT EXISTS %s ( %s%s);"
+        return String.format("CREATE TABLE IF NOT EXISTS %s ( %s%s );"
                 , tableName, TextUtils.join(",", columns.toArray())
                 , (constraints.isEmpty() ? ""
-                        : String.format(",%s"
+                        : String.format(",\n%s"
                         , TextUtils.join(",", constraints.toArray()))));
     }
 }
