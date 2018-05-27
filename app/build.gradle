@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.yann-yvan'
 version='1.0'
@@ -6,7 +6,6 @@ version='1.0'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "corp.ny.com.rufus"
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
